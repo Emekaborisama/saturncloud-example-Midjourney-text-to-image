@@ -1,0 +1,7 @@
+transformers
+torch
+diffusers
+numpy
+pandas
+streamlit
+accelerate
