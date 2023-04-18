@@ -4,7 +4,7 @@ import numpy as np
 import accelerate
 from PIL import Image
 import os
-
+from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
 directory = "generatedimages"
 if not os.path.exists(directory):
     os.makedirs(directory)
@@ -17,6 +17,9 @@ class Model_generate():
     def __init__(self, model_name,device):
         self.device=device
         self.model_id = model_name
+        
+
+        dpm = DPMSolverMultistepScheduler.from_pretrained(self.model_id, subfolder="scheduler")
         self.pipe = StableDiffusionPipeline.from_pretrained(self.model_id, torch_dtype=torch.float32)
         
         
