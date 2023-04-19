@@ -10,6 +10,11 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 
 
+model_id = "Joeythemonster/anything-midjourney-v-4-1"
+dpm = DPMSolverMultistepScheduler.from_pretrained(model_id, subfolder="scheduler")
+pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+pipe = pipe.to("cuda")
+pipe.enable_attention_slicing()
 
 
 
@@ -17,14 +22,14 @@ class Model_generate():
     def __init__(self, model_name,device):
         self.device=device
         self.model_id = model_name
-        
 
         dpm = DPMSolverMultistepScheduler.from_pretrained(self.model_id, subfolder="scheduler")
-        self.pipe = StableDiffusionPipeline.from_pretrained(self.model_id, torch_dtype=torch.float32)
+        self.pipe = StableDiffusionPipeline.from_pretrained(self.model_id, torch_dtype=torch.float16)
+        self.pipe = self.pipe.to("cuda")
+        self.pipe.enable_attention_slicing()
         
         
     def load_model(self):
-        self.pipe = self.pipe.to(self.device)
         return self.pipe
 
 
