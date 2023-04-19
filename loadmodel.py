@@ -10,6 +10,11 @@ if not os.path.exists(directory):
     os.makedirs(directory)
 
 
+# model_id = "Joeythemonster/anything-midjourney-v-4-1"
+# dpm = DPMSolverMultistepScheduler.from_pretrained(model_id, subfolder="scheduler")
+# pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+# pipe = pipe.to("cuda")
+# pipe.enable_attention_slicing()
 
 
 
@@ -38,4 +43,8 @@ class Model_generate():
     
     
     
+# model_name = os.getenv("MODEL_NAME")
+# device = os.getenv("DEVICE")
+# model = Model_generate(model_name=model_name, device=device)
 
+# model.generate_image(prompt="nasa moon")
