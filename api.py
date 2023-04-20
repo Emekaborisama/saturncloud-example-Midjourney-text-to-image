@@ -7,8 +7,13 @@ import numpy as np
 import accelerate
 from PIL import Image
 import os
+from flask_cors import CORS
+
+
+
 
 app = Flask(__name__)
+CORS(app)
 
 directory = "generatedimages"
 if not os.path.exists(directory):
@@ -42,6 +47,7 @@ device = os.getenv("DEVICE")
 model = Model_generate(model_name=model_name, device=device)
 
 
+
 @app.route("/home")
 def index():
   return("welcome to app")
@@ -49,7 +55,7 @@ def index():
 
 
 
-@app.route('/generate_image', methods=['POST'])
+@app.route('/generate_image', methods=['GET','POST'])
 def download():
     prompt = request.args.get('prompt')
     if prompt is None:
