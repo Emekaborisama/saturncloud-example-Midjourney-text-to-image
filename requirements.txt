@@ -6,3 +6,4 @@ pandas
 streamlit
 accelerate
 click
+flask_cors
