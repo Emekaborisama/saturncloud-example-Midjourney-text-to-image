@@ -64,7 +64,7 @@ def download():
     # device = os.getenv("DEVICE")
     # model = Model_generate(model_name=model_name, device=device)
     filepath = model.generate_image(prompt)
-    return send_file(filepath, as_attachment=True)
+    return send_file(filepath, mimetype='image/png')
     # return send_from_directory(directory, filename, as_attachment=True)
 
 if __name__ == '__main__':
