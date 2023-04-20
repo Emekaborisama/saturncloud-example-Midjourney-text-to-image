@@ -8,12 +8,15 @@ import accelerate
 from PIL import Image
 import os
 from flask_cors import CORS
-
+import io
 
 
 
 app = Flask(__name__)
 CORS(app)
+import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+
 
 directory = "generatedimages"
 if not os.path.exists(directory):
@@ -36,13 +39,13 @@ class Model_generate():
         image = self.pipe(prompt).images[0]
         image = np.asarray(image)
         im = Image.fromarray(image)
-        filename = f"{prompt}.jpeg"
+        filename = f"{prompt}.png"
         filepath = os.path.join(directory, filename)
-        img_data = io.BytesIO()
-        image.save(img_data, "PNG")
-        img_data.seek(0)
+        # img_data = io.BytesIO()
+        # image.save(img_data, "PNG")
+        # img_data.seek(0)
         im.save(filepath)
-        return img_data
+        return filepath
     
 
 model_name = os.getenv("MODEL_NAME")
@@ -68,7 +71,7 @@ def download():
     # model = Model_generate(model_name=model_name, device=device)
     filepath = model.generate_image(prompt)
     return send_file(filepath, mimetype='image/png')
-    # return send_from_directory(directory, filename, as_attachment=True)
+    # return send_from_directory(directory, filepath, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run( host= '0.0.0.0', port = 8000, debug=True)
+    app.run( host= '0.0.0.0', port = 8501, debug=True)
