@@ -38,8 +38,11 @@ class Model_generate():
         im = Image.fromarray(image)
         filename = f"{prompt}.jpeg"
         filepath = os.path.join(directory, filename)
+        img_data = io.BytesIO()
+        image.save(img_data, "PNG")
+        img_data.seek(0)
         im.save(filepath)
-        return filepath
+        return img_data
     
 
 model_name = os.getenv("MODEL_NAME")
