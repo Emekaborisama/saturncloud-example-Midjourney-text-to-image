@@ -50,6 +50,16 @@ class Model_generate():
         # img_data.seek(0)
         im.save(filepath)
         return filepath
+    def generate_image2(self, prompt):
+        image = self.pipe(prompt).images[0]
+        img_bytes = io.BytesIO()
+        image.save(img_bytes, format='PNG')
+        img_bytes.seek(0)
+        filename = f"{prompt}.png"
+        filepath = os.path.join(directory, filename)
+        with open(filepath, 'wb') as f:
+            f.write(img_bytes.read())
+        return filepath
     
 
 
