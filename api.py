@@ -1,33 +1,29 @@
-# flask api
-
-from flask import Flask, request, send_from_directory,send_file
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
 import torch
 import numpy as np
-import accelerate
 from PIL import Image
 import os
-from flask_cors import CORS
 import io
-import os
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
 
-model_name = os.getenv("MODEL_NAME")
-device = os.getenv("DEVICE")
+app = FastAPI()
 
-
-
-app = Flask(__name__)
-CORS(app)
-
-
+# Add CORS middleware to allow cross-origin requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 directory = "generatedimages"
 if not os.path.exists(directory):
     os.makedirs(directory)
 
 class Model_generate():
-    def __init__(self, model_name,device):
+    def __init__(self, model_name, device):
         self.device=device
         self.model_id = model_name
 
@@ -45,11 +41,9 @@ class Model_generate():
         im = Image.fromarray(image)
         filename = f"{prompt}.png"
         filepath = os.path.join(directory, filename)
-        # img_data = io.BytesIO()
-        # image.save(img_data, "PNG")
-        # img_data.seek(0)
         im.save(filepath)
         return filepath
+
     def generate_image2(self, prompt):
         image = self.pipe(prompt).images[0]
         img_bytes = io.BytesIO()
@@ -60,31 +54,21 @@ class Model_generate():
         with open(filepath, 'wb') as f:
             f.write(img_bytes.read())
         return filepath
-    
 
-
+model_name = os.getenv("MODEL_NAME")
+device = os.getenv("DEVICE")
 model = Model_generate(model_name=model_name, device=device)
 
-
-
-@app.route("/home")
+@app.get("/")
 def index():
-  return("welcome to app")
+    return {"message": "Welcome to the app"}
 
-
-
-
-@app.route('/generate_image', methods=['GET','POST'])
-def download():
-    prompt = request.args.get('prompt')
-    if prompt is None:
-        return "Please provide a prompt"
-    # model_name = os.getenv("MODEL_NAME")
-    # device = os.getenv("DEVICE")
-    # model = Model_generate(model_name=model_name, device=device)
+@app.post('/generate_image')
+def generate_image(prompt: str):
+    if not prompt:
+        return {"error": "Please provide a prompt"}
     filepath = model.generate_image2(prompt)
-    return send_file(filepath, mimetype='image/png')
-    # return send_from_directory(directory, filepath, as_attachment=True)
+    return FileResponse(filepath, media_type='image/png')
 
-if __name__ == '__main__':
-    app.run( host= '0.0.0.0', port = 8080, debug=True)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8082)
