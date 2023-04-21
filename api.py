@@ -9,13 +9,17 @@ from PIL import Image
 import os
 from flask_cors import CORS
 import io
+import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+
+model_name = os.getenv("MODEL_NAME")
+device = os.getenv("DEVICE")
 
 
 
 app = Flask(__name__)
 CORS(app)
-import os
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+
 
 
 directory = "generatedimages"
@@ -48,8 +52,7 @@ class Model_generate():
         return filepath
     
 
-model_name = os.getenv("MODEL_NAME")
-device = os.getenv("DEVICE")
+
 model = Model_generate(model_name=model_name, device=device)
 
 
